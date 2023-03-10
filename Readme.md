@@ -1,0 +1,1 @@
+[adaptive-barrier](https://docs.rs/adaptive-barrier/latest/adaptive_barrier/) but built from atomics and futexes instead of mutexes and condvar.
