@@ -7,8 +7,6 @@ use std::{
     sync::atomic::{AtomicU32, Ordering},
 };
 
-//TODO(arthur): overflows
-
 pub struct Rendezvous {
     ptr: NonNull<RDVInner>,
     phantom: PhantomData<RDVInner>,
@@ -103,8 +101,14 @@ impl Clone for Rendezvous {
     fn clone(&self) -> Self {
         // Safety: self exist so the ptr is valid
         let inner = unsafe { self.ptr.as_ref() };
-        inner.live.fetch_add(1, Ordering::Acquire);
+        inner
+            .alloc_dep
+            .fetch_update(Ordering::AcqRel, Ordering::Relaxed, |n| n.checked_add(1))
+            .expect("There should not be more than 2^32 - 1 clones of one Rendezvous.");
         inner.alloc_dep.fetch_add(1, Ordering::Acquire);
+        // This one cannot overflow because live < alloc_dep
+        // at all times
+        inner.live.fetch_add(1, Ordering::Acquire);
         Self {
             ptr: self.ptr,
             phantom: self.phantom,
