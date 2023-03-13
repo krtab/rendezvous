@@ -12,8 +12,12 @@ pub struct Rendezvous {
     phantom: PhantomData<RDVInner>,
 }
 
+// Safety: it is send by design.
 unsafe impl Send for Rendezvous {}
-// unsafe impl Sync for Rendezvous {}
+// Safety: this is also sync:
+// all methods taking self by reference (only clone for now) only use it as a
+// smart pointer and do not change the allocation.
+unsafe impl Sync for Rendezvous {}
 
 impl Rendezvous {
     pub fn new() -> Self {
@@ -35,9 +39,9 @@ impl Rendezvous {
         // inner.alloc_dep > 0
         // which implies that self.ptr is still valid
         {
-            let inner = unsafe { ptr.as_ref() };
             // Safety: Because of the scope invariant
             // the pointer will remain valid until the scope's end.
+            let inner = unsafe { ptr.as_ref() };
             let mut l = inner.live.fetch_sub(1, Ordering::AcqRel) - 1;
             if l == 0 {
                 // We were the last live barrier
