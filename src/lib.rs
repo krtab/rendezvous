@@ -167,7 +167,6 @@ impl Clone for Rendezvous {
             .alloc_dep
             .fetch_update(Ordering::AcqRel, Ordering::Relaxed, |n| n.checked_add(1))
             .expect("There should not be more than 2^32 - 1 clones of one Rendezvous.");
-        inner.alloc_dep.fetch_add(1, Ordering::Acquire);
         // This one cannot overflow because live < alloc_dep
         // at all times
         inner.live.fetch_add(1, Ordering::Acquire);
