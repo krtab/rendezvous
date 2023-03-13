@@ -5,6 +5,20 @@ members = ["stress-test"]
 name = "rendezvous"
 version = "0.1.0"
 edition = "2021"
+authors = ["Arthur Carcano"]
+description = """A high-efficiency adaptive barrier (aka. waitgroup) implemented using
+atomics and futexes instead of condvar and mutexes."""
+readme = "README.md"
+repository = "https://github.com/krtab/rendezvous"
+license = "MIT"
+exclude = [
+    ".github",
+    "rustfmt.toml",
+    "deny.toml",
+    "!resources/red-iron.png",
+]
+categories = ["concurrency", "algorithms"]
+keywords = ["barrier", "sync", "atomic", "adaptive", "waitgroup"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
