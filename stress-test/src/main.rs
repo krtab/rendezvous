@@ -27,10 +27,8 @@ fn f(id: String, n_child: usize, rem_depth: usize, b: impl BarrierLike + 'static
         // let id_child = String::new();
         let b = b.clone();
         let _h = std::thread::spawn(move || f(id_child, n_child, rem_depth - 1, b));
-        // handles.push(h);
     }
-    std::mem::drop(b.clone());
-    b.wait();
+    drop(b)
 }
 
 fn g(id: String, n_child: usize, rem_depth: usize) {
@@ -53,16 +51,21 @@ fn g(id: String, n_child: usize, rem_depth: usize) {
 fn main() {
     const N_CHILD: usize = 2;
     const DEPTH: usize = 10;
+    //
     let b = rendezvous::Rendezvous::new();
     let start = Instant::now();
-    f("".into(), N_CHILD, DEPTH, b);
+    f("".into(), N_CHILD, DEPTH, b.clone());
+    b.wait();
     let end = start.elapsed();
     eprintln!("rendez-vous: {}ms", end.as_millis());
+    //
     let b = adaptive_barrier::Barrier::new(adaptive_barrier::PanicMode::Decrement);
     let start = Instant::now();
-    f("".into(), N_CHILD, DEPTH, b);
+    f("".into(), N_CHILD, DEPTH, b.clone());
+    b.wait();
     let end = start.elapsed();
     eprintln!("adaptive: {}ms", end.as_millis());
+    //
     let start = Instant::now();
     g("".into(), N_CHILD, DEPTH);
     let end = start.elapsed();
