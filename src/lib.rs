@@ -61,7 +61,6 @@
 //! [`Barrier`]: std::sync::Barrier
 use std::{
     fmt::Debug,
-    marker::PhantomData,
     mem::forget,
     ptr::NonNull,
     sync::atomic::{AtomicU32, Ordering},
@@ -75,7 +74,6 @@ use std::{
 ///   rendezvous.
 pub struct Rendezvous {
     ptr: NonNull<RDVInner>,
-    phantom: PhantomData<RDVInner>,
 }
 
 struct RDVInner {
@@ -94,7 +92,6 @@ impl Rendezvous {
         Self {
             // SAFETY: Box::into_raw cannot be null.
             ptr: unsafe { NonNull::new_unchecked(Box::into_raw(boxed)) },
-            phantom: PhantomData,
         }
     }
 
@@ -176,7 +173,6 @@ impl Clone for Rendezvous {
         inner.live.fetch_add(1, Ordering::Acquire);
         Self {
             ptr: self.ptr,
-            phantom: self.phantom,
         }
     }
 }
