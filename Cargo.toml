@@ -1,5 +1,5 @@
 [workspace]
-members = ["stress-test"]
+members = ["stress-test","bench"]
 
 [package]
 name = "rendezvous"
@@ -19,6 +19,7 @@ exclude = [
 ]
 categories = ["concurrency", "algorithms"]
 keywords = ["barrier", "sync", "atomic", "adaptive", "waitgroup"]
+autobenches = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

@@ -52,22 +52,28 @@ fn main() {
     const N_CHILD: usize = 2;
     const DEPTH: usize = 10;
     //
-    let b = rendezvous::Rendezvous::new();
     let start = Instant::now();
-    f("".into(), N_CHILD, DEPTH, b.clone());
-    b.wait();
+    for _ in 0..100 {
+        let b = rendezvous::Rendezvous::new();
+        f("".into(), N_CHILD, DEPTH, b.clone());
+        b.wait();
+    }
     let end = start.elapsed();
     eprintln!("rendez-vous: {}ms", end.as_millis());
     //
-    let b = adaptive_barrier::Barrier::new(adaptive_barrier::PanicMode::Decrement);
     let start = Instant::now();
-    f("".into(), N_CHILD, DEPTH, b.clone());
-    b.wait();
+    for _ in 0..100 {
+        let b = adaptive_barrier::Barrier::new(adaptive_barrier::PanicMode::Decrement);
+        f("".into(), N_CHILD, DEPTH, b.clone());
+        b.wait();
+    }
     let end = start.elapsed();
     eprintln!("adaptive: {}ms", end.as_millis());
     //
     let start = Instant::now();
-    g("".into(), N_CHILD, DEPTH);
+    for _ in 0..100 {
+        g("".into(), N_CHILD, DEPTH);
+    }
     let end = start.elapsed();
     eprintln!("join: {}ms", end.as_millis());
 }

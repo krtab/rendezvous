@@ -1,0 +1,23 @@
+[package]
+name = "bench"
+version = "0.1.0"
+edition = "2021"
+authors = ["Arthur Carcano"]
+description = """Bench for rendezvous"""
+readme = "README.md"
+repository = "https://github.com/krtab/rendezvous"
+publish = false
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+
+
+[dev-dependencies]
+adaptive-barrier = {version = "1.0.0"}
+criterion = {version = "0.4.0", features = ["html_reports"]}
+crossbeam-utils = {version = "0.8.15"}
+rendezvous = {path = ".."}
+
+[[bench]]
+name = "thread_tree"
+harness = false
