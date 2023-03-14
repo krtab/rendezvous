@@ -169,10 +169,8 @@ impl Clone for Rendezvous {
             .expect("There should not be more than 2^32 - 1 clones of one Rendezvous.");
         // This one cannot overflow because live < alloc_dep
         // at all times
-        inner.live.fetch_add(1, Ordering::Acquire);
-        Self {
-            ptr: self.ptr,
-        }
+        inner.live.fetch_add(1, Ordering::AcqRel);
+        Self { ptr: self.ptr }
     }
 }
 
