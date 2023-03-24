@@ -25,3 +25,4 @@ autobenches = false
 
 [dependencies]
 atomic-wait = "1.1.0"
+cache-padded = "1.2.0"

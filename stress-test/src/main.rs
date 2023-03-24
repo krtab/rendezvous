@@ -51,9 +51,10 @@ fn g(id: String, n_child: usize, rem_depth: usize) {
 fn main() {
     const N_CHILD: usize = 2;
     const DEPTH: usize = 10;
+    const N_ITER: u32 = 10;
     //
     let start = Instant::now();
-    for _ in 0..100 {
+    for _ in 0..N_ITER {
         let b = rendezvous::Rendezvous::new();
         f("".into(), N_CHILD, DEPTH, b.clone());
         b.wait();
@@ -62,7 +63,7 @@ fn main() {
     eprintln!("rendez-vous: {}ms", end.as_millis());
     //
     let start = Instant::now();
-    for _ in 0..100 {
+    for _ in 0..N_ITER {
         let b = adaptive_barrier::Barrier::new(adaptive_barrier::PanicMode::Decrement);
         f("".into(), N_CHILD, DEPTH, b.clone());
         b.wait();
@@ -71,7 +72,7 @@ fn main() {
     eprintln!("adaptive: {}ms", end.as_millis());
     //
     let start = Instant::now();
-    for _ in 0..100 {
+    for _ in 0..N_ITER {
         g("".into(), N_CHILD, DEPTH);
     }
     let end = start.elapsed();

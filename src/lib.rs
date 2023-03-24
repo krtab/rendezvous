@@ -62,9 +62,12 @@
 use std::{
     fmt::Debug,
     mem::forget,
+    ops::Deref,
     ptr::NonNull,
     sync::atomic::{AtomicU32, Ordering},
 };
+
+use cache_padded::CachePadded;
 
 /// An adaptive barrier or waitgroup. See the [crate] documentation for more.
 ///
@@ -77,8 +80,8 @@ pub struct Rendezvous {
 }
 
 struct RDVInner {
-    live: AtomicU32,
-    alloc_dep: AtomicU32,
+    live: CachePadded<AtomicU32>,
+    alloc_dep: CachePadded<AtomicU32>,
 }
 
 impl Rendezvous {
@@ -86,8 +89,8 @@ impl Rendezvous {
     /// synchronize on it.
     pub fn new() -> Self {
         let boxed = Box::new(RDVInner {
-            live: AtomicU32::new(1),
-            alloc_dep: AtomicU32::new(1),
+            live: CachePadded::new(AtomicU32::new(1)),
+            alloc_dep: CachePadded::new(AtomicU32::new(1)),
         });
         Self {
             // SAFETY: Box::into_raw cannot be null.
@@ -109,7 +112,7 @@ impl Rendezvous {
             let mut l = inner.live.fetch_sub(1, Ordering::AcqRel) - 1;
             if l == 0 {
                 // We were the last live barrier
-                atomic_wait::wake_all(&inner.live);
+                atomic_wait::wake_all(inner.live.deref());
             }
             while l > 0 {
                 // There are still some live barriers
@@ -142,7 +145,7 @@ impl Drop for Rendezvous {
             let inner = unsafe { self.ptr.as_ref() };
             if inner.live.fetch_sub(1, Ordering::AcqRel) == 1 {
                 //TODO(arthur): maybe do only if there are waiting threads
-                atomic_wait::wake_all(&inner.live);
+                atomic_wait::wake_all(inner.live.deref());
             }
         }
         // Safety: the invariant from the scope above is still true
